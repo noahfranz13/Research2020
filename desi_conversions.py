@@ -49,10 +49,15 @@ def writefits(fileloc, name, data, unit, hdrname=None):
         fits.writeto(infile, data, header=hdr, overwrite=True)
         
 # Plot spectra using quickspectra
-
-def plotobsspectra(outfile, specnum=0, nfilter=11, plotall=False, specrange=1, truewave=None, trueflux=None):
+            
+def plotobsspectra(outfile, specnum=0, nfilter=11, plotall=False, specrange=1, truewave=None, trueflux=None, rrtitle=False, rrfile_path=None):
     
     spectra = desispec.io.read_spectra(outfile) #Read the output fits spectra file
+    
+    if rrtitle != False and rrfile_path != None: # Set up a title as redrock redshift
+        
+        zbest = Table.read(rrfile_path, 'ZBEST')
+        zb = zbest['Z']
     
     if plotall == True: # Plots all the spectrum in the range provided, range must be less than number of spectra read in
         
@@ -83,7 +88,9 @@ def plotobsspectra(outfile, specnum=0, nfilter=11, plotall=False, specrange=1, t
             if truewave is not None and trueflux is not None: # Plots original spectra model on top of the noise
                 plt.plot(truewave, trueflux[spec], 'k-')
             
-            
+            if rrtitle != False: # Adds the redrock redshift as a title to each graph in provided range
+                plt.title('z = {}'.format(zb[spec]))
+                
     else: # Only plots the spectra number listed in specnum
         
         plt.axhline(0, color='k', alpha = 0.2)
@@ -103,5 +110,8 @@ def plotobsspectra(outfile, specnum=0, nfilter=11, plotall=False, specrange=1, t
         plt.xlabel('Wavelength [A]')
         plt.ylim(ymin, ymax)
         
-        if truewave is not None and trueflux is not None:
+        if truewave is not None and trueflux is not None: # Plots original model spectrum
             plt.plot(truewave, trueflux[specnum], 'k-')
+            
+        if rrtitle != False: # Adds the reshift as the title
+                plt.title('z = {}'.format(zb[specnum]))
