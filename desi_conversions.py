@@ -12,15 +12,15 @@ def nmtom(data):
     nm = 22.5 - (2.5 * (np.log10(data)))
     return nm
 
-# Plot spectra using desisim
+# Plot random model spectra using desisim
 
-def plotspec(nspec, wave, flux):
+def plotspec(nspec, wave, flux): 
     
-    size = (25, nspec*3)
+    size = (25, nspec*3) # setts size based on number of input spectra
         
     plt.figure(figsize=size)
         
-    for spec in range(nspec):
+    for spec in range(nspec): # Plots the spectra in a subplot
         
         plt.subplot(np.ceil(nspec/2),3,spec+1)
         plt.plot(wave, flux[spec])
@@ -31,30 +31,30 @@ def plotspec(nspec, wave, flux):
 
 def writefits(fileloc, name, data, unit, hdrname=None):
     
-    if name[-5:] != '.fits':
+    if name[-5:] != '.fits': # Checks to see if the filename is a fits file
         name += '.fits'
         
     infile = os.path.join(fileloc, name)
     
-    hdr = fits.Header()
+    hdr = fits.Header() # Initiates and sets up a header
     hdr['EXTNAME'] = hdrname
     hdr['BUNIT'] = unit
     
-    if os.path.exists(infile) == True:
+    if os.path.exists(infile) == True: # Checks to see if the file already exists and if so appends instead of overwriting
         
         fits.append(infile, data, header=hdr)
     
-    else:
+    else: # If file does not exist, writes a new file
         
         fits.writeto(infile, data, header=hdr, overwrite=True)
         
-#Plot spectra using quickspectra
+# Plot spectra using quickspectra
 
 def plotobsspectra(outfile, specnum=0, nfilter=11, plotall=False, specrange=1, truewave=None, trueflux=None):
     
-    spectra = desispec.io.read_spectra(outfile)
+    spectra = desispec.io.read_spectra(outfile) #Read the output fits spectra file
     
-    if plotall == True:
+    if plotall == True: # Plots all the spectrum in the range provided, range must be less than number of spectra read in
         
         size = (25, specrange*3)
         
@@ -70,7 +70,7 @@ def plotobsspectra(outfile, specnum=0, nfilter=11, plotall=False, specrange=1, t
             
             ymin = ymax = 0.0
             
-            for x in ['b', 'r', 'z']:
+            for x in ['b', 'r', 'z']: # Sets domain and range
                 tmpmin, tmpmax = np.percentile(spectra.flux[x][spec], [1, 99])
                 ymin = min(tmpmin, ymin)
                 ymax = max(tmpmax, ymax)
@@ -80,11 +80,11 @@ def plotobsspectra(outfile, specnum=0, nfilter=11, plotall=False, specrange=1, t
             plt.xlabel('Wavelength [A]')
             plt.ylim(ymin, ymax)
             
-            if truewave is not None and trueflux is not None:
+            if truewave is not None and trueflux is not None: # Plots original spectra model on top of the noise
                 plt.plot(truewave, trueflux[spec], 'k-')
             
             
-    else:
+    else: # Only plots the spectra number listed in specnum
         
         plt.axhline(0, color='k', alpha = 0.2)
         
@@ -94,7 +94,7 @@ def plotobsspectra(outfile, specnum=0, nfilter=11, plotall=False, specrange=1, t
         
         ymin = ymax = 0.0
             
-        for x in ['b', 'r', 'z']:
+        for x in ['b', 'r', 'z']: # Sets domain and range of plot
             tmpmin, tmpmax = np.percentile(spectra.flux[x][specnum], [1, 99])
             ymin = min(tmpmin, ymin)
             ymax = max(tmpmax, ymax)
