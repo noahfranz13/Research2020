@@ -13,8 +13,6 @@ from desispec.spectra import Spectra
 from desisim.templates import BGS, ELG, LRG
 import redrock.templates
 
-# Testing SSH
-
 # Convert nanomaggies to magnitudes
 
 def nmtom(data):
